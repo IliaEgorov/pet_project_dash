@@ -1,1 +1,2 @@
 python neural_style.py --content_img golden_gate.jpg --style_imgs starry-night.jpg  --max_size 1000  --max_iterations 100  --original_colors
+scp -i "public_key" ubuntu@ec2-34-245-66-44.eu-west-1.compute.amazonaws.com:~/projects/neural-style-tf/image_output/result/result.png ~/Projects/tf2coreml/results_from_aws_vm/
