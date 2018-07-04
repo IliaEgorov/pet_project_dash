@@ -545,7 +545,7 @@ def check_image(img, path):
   rendering -- where the magic happens
 '''
 def stylize(content_img, style_imgs, init_img, frame=None):
-  saver = tf.train.Saver()
+
   with tf.device(args.device), tf.Session() as sess:
     # setup network
     net = build_model(content_img)
@@ -595,6 +595,7 @@ def stylize(content_img, style_imgs, init_img, frame=None):
       write_video_output(frame, output_img)
     else:
       write_image_output(output_img, content_img, style_imgs, init_img)
+      saver = tf.train.Saver()
       save_path = saver.save(sess, "/tmp/model.ckpt")
       print("Model saved in path: %s" % save_path)
 
