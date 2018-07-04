@@ -595,9 +595,9 @@ def stylize(content_img, style_imgs, init_img, frame=None):
       write_video_output(frame, output_img)
     else:
       write_image_output(output_img, content_img, style_imgs, init_img)
-      saver = tf.train.Saver()
-      save_path = saver.save(sess, "/tmp/model.ckpt")
-      print("Model saved in path: %s" % save_path)
+  saver = tf.train.Saver()
+  save_path = saver.save(sess, "/tmp/model.ckpt")
+  print("Model saved in path: %s" % save_path)
 
 def minimize_with_lbfgs(sess, net, optimizer, init_img):
   if args.verbose: print('\nMINIMIZING LOSS USING: L-BFGS OPTIMIZER')
