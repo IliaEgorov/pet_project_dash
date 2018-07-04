@@ -546,58 +546,59 @@ def check_image(img, path):
 '''
 def stylize(content_img, style_imgs, init_img, frame=None):
 
-  with tf.device(args.device), tf.Session() as sess:
-    # setup network
-    net = build_model(content_img)
-    
-    # style loss
-    if args.style_mask:
-      L_style = sum_masked_style_losses(sess, net, style_imgs)
-    else:
-      L_style = sum_style_losses(sess, net, style_imgs)
-    
-    # content loss
-    L_content = sum_content_losses(sess, net, content_img)
-    
-    # denoising loss
-    L_tv = tf.image.total_variation(net['input'])
-    
-    # loss weights
-    alpha = args.content_weight
-    beta  = args.style_weight
-    theta = args.tv_weight
-    
-    # total loss
-    L_total  = alpha * L_content
-    L_total += beta  * L_style
-    L_total += theta * L_tv
-    
-    # video temporal loss
-    if args.video and frame > 1:
-      gamma      = args.temporal_weight
-      L_temporal = sum_shortterm_temporal_losses(sess, net, frame, init_img)
-      L_total   += gamma * L_temporal
+  with tf.Session() as sess:
+    with tf.device(args.device):
+      # setup network
+      net = build_model(content_img)
 
-    # optimization algorithm
-    optimizer = get_optimizer(L_total)
+      # style loss
+      if args.style_mask:
+        L_style = sum_masked_style_losses(sess, net, style_imgs)
+      else:
+        L_style = sum_style_losses(sess, net, style_imgs)
 
-    if args.optimizer == 'adam':
-      minimize_with_adam(sess, net, optimizer, init_img, L_total)
-    elif args.optimizer == 'lbfgs':
-      minimize_with_lbfgs(sess, net, optimizer, init_img)
-    
-    output_img = sess.run(net['input'])
-    
-    if args.original_colors:
-      output_img = convert_to_original_colors(np.copy(content_img), output_img)
+      # content loss
+      L_content = sum_content_losses(sess, net, content_img)
 
-    if args.video:
-      write_video_output(frame, output_img)
-    else:
-      write_image_output(output_img, content_img, style_imgs, init_img)
-  saver = tf.train.Saver()
-  save_path = saver.save(sess, "/tmp/model.ckpt")
-  print("Model saved in path: %s" % save_path)
+      # denoising loss
+      L_tv = tf.image.total_variation(net['input'])
+
+      # loss weights
+      alpha = args.content_weight
+      beta  = args.style_weight
+      theta = args.tv_weight
+
+      # total loss
+      L_total  = alpha * L_content
+      L_total += beta  * L_style
+      L_total += theta * L_tv
+
+      # video temporal loss
+      if args.video and frame > 1:
+        gamma      = args.temporal_weight
+        L_temporal = sum_shortterm_temporal_losses(sess, net, frame, init_img)
+        L_total   += gamma * L_temporal
+
+      # optimization algorithm
+      optimizer = get_optimizer(L_total)
+
+      if args.optimizer == 'adam':
+        minimize_with_adam(sess, net, optimizer, init_img, L_total)
+      elif args.optimizer == 'lbfgs':
+        minimize_with_lbfgs(sess, net, optimizer, init_img)
+
+      output_img = sess.run(net['input'])
+
+      if args.original_colors:
+        output_img = convert_to_original_colors(np.copy(content_img), output_img)
+
+      if args.video:
+        write_video_output(frame, output_img)
+      else:
+        write_image_output(output_img, content_img, style_imgs, init_img)
+    saver = tf.train.Saver()
+    save_path = saver.save(sess, "/tmp/model.ckpt")
+    print("Model saved in path: %s" % save_path)
 
 def minimize_with_lbfgs(sess, net, optimizer, init_img):
   if args.verbose: print('\nMINIMIZING LOSS USING: L-BFGS OPTIMIZER')
