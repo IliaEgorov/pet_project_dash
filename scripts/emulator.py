@@ -85,7 +85,7 @@ class Bananas:
                 break
         #print(line)
 
-        # Количество символов подряд начиная с первого
+        
         if first != -1 and first != self.settings['sc']:
             for s in line:
                 if s == first or s == self.settings['w']:
@@ -93,14 +93,14 @@ class Bananas:
                 else:
                     break
 
-        # Количество wild подряд начиная с первого
+        
         for s in line:
             if s == self.settings['w']:
                 wild_num += 1
             else:
                 break
 
-        if self.settings['w'] in line[:comb_num] and first != self.settings['w']:  # НАДО ДОДУМАТЬ!
+        if self.settings['w'] in line[:comb_num] and first != self.settings['w']: 
             win_coef = 2
 
         line_win     = win_coef * self.win_cost(first,comb_num)
